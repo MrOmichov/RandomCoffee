@@ -28,7 +28,8 @@ kotlin {
     
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.ktor.client.android)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -66,6 +67,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation("io.ktor:ktor-client-cio:3.5.0")
         }
     }
 }

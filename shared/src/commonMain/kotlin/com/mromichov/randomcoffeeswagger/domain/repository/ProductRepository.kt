@@ -4,7 +4,7 @@ import com.mromichov.randomcoffeeswagger.domain.model.Category
 import com.mromichov.randomcoffeeswagger.domain.model.Product
 
 interface ProductRepository {
-    suspend fun getProducts(page: Int, categoryId: Int?): Result<List<Product>>
+    suspend fun getProducts(): Result<List<Product>>
     suspend fun getProductById(id: Int): Result<Product>
     suspend fun getCategories(): Result<List<Category>>
 }

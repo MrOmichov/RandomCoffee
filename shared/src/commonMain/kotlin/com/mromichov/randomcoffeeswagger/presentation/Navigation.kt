@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.mromichov.randomcoffeeswagger.Greeting
 import com.mromichov.randomcoffeeswagger.domain.model.Product
+import com.mromichov.randomcoffeeswagger.presentation.catalog.CatalogScreen
 import com.mromichov.randomcoffeeswagger.presentation.catalog.ProductCard
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
@@ -41,21 +42,8 @@ fun AppNavigation() {
         startDestination = CatalogRoute
     ) {
         composable<CatalogRoute> {
-            ProductCard(
-                product = Product(
-                    id = 0,
-                    name = "Coffee",
-                    description = "Coffee",
-                    price = 200.0,
-                    imageUrl = "",
-                    categoryId = 1,
-                    categoryName = "Что-то",
-                ),
-                onCardClick = {},
-                onAddClick = {  },
-                onIncrement = {},
-                onDecrement = {},
-                quantityInCart = 2,
+            CatalogScreen(
+                onProductCardClick = {} // TODO переход на экран описания товара
             )
         }
     }

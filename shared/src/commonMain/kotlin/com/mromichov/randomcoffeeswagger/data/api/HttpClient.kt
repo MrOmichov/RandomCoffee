@@ -35,14 +35,12 @@ fun createHttpClient(): HttpClient {
             socketTimeoutMillis = 15_000
         }
 
-        // Retry логика — это требование ТЗ
         install(HttpRequestRetry) {
             retryOnServerErrors(maxRetries = 3)
             retryOnException(maxRetries = 3, retryOnTimeout = true)
             exponentialDelay()
         }
 
-        // Базовый URL
         defaultRequest {
             url("https://coffee-backend.caravanlabs.ru/")
         }

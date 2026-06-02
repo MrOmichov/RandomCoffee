@@ -5,20 +5,17 @@ import com.mromichov.randomcoffeeswagger.data.dto.toDomain
 import com.mromichov.randomcoffeeswagger.domain.repository.ProductRepository
 import com.mromichov.randomcoffeeswagger.domain.model.Product
 import com.mromichov.randomcoffeeswagger.domain.model.Category
+import io.ktor.client.plugins.logging.Logger
 
 
 class ProductRepositoryImpl(
     private val api: RandomCoffeeApi
 ) : ProductRepository {
 
-    override suspend fun getProducts(
-        page: Int,
-        categoryId: Int?
-    ): Result<List<Product>> = runCatching {
+    override suspend fun getProducts(): Result<List<Product>> = runCatching {
         val categories: Map<Int, String> = api.getCategories().associate { it.id to it.name }
 
-        api.getProducts(page = page, categoryId = categoryId)
-            .map { it.toDomain(categories) }
+        api.getProducts().map { it.toDomain(categories) }
     }
 
     override suspend fun getProductById(id: Int): Result<Product> = runCatching {

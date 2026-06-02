@@ -28,17 +28,9 @@ class RandomCoffeeApi(
         client.get("categories").body()
 
 
-
     suspend fun getProducts(
-        page: Int = 1,
-        size: Int = 20,
-        categoryId: Int? = null
     ): List<ProductDto> =
-        client.get("products") {
-            parameter("page", page)
-            parameter("size", size)
-            categoryId?.let { parameter("category_id", it) }
-        }.body()
+        client.get("products").body()
 
     suspend fun getProductById(id: Int): ProductDto =
         client.get("products/$id").body()

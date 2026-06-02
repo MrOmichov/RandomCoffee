@@ -9,10 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
@@ -23,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +30,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mromichov.randomcoffeeswagger.domain.model.Product
+import org.jetbrains.compose.resources.painterResource
+import randomcoffeeswagger.shared.generated.resources.Res
+import randomcoffeeswagger.shared.generated.resources.no_image
 
 @Composable
 fun ProductCard(
@@ -38,20 +41,20 @@ fun ProductCard(
     onAddClick: () -> Unit,
     onIncrement: () -> Unit,
     onDecrement: () -> Unit,
-    quantityInCart: Int,          // сколько уже в корзине
+    quantityInCart: Int,
     modifier: Modifier = Modifier
 ) {
     Card(
         onClick = onCardClick,
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AsyncImage(
                 model = product.imageUrl,
@@ -59,34 +62,38 @@ fun ProductCard(
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
+                    .height(100.dp),
+                error = painterResource(Res.drawable.no_image),
             )
 
             Text(
                 text = product.name,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 9.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "${product.price.toInt()} ₽",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
 
                 if (quantityInCart > 0) {
                     QuantityCounter(
                         quantity = quantityInCart,
                         onIncrement = onIncrement,
-                        onDecrement = onDecrement
+                        onDecrement = onDecrement,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 } else {
+                    Text(
+                        text = "${product.price.toInt()} ₽",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                     AddButton(onClick = onAddClick)
                 }
             }
@@ -94,20 +101,24 @@ fun ProductCard(
     }
 }
 
+const val addRemoveBtnSize = 40
+const val addRemoveIconSize = 24
+
 @Composable
 private fun AddButton(onClick: () -> Unit) {
     FilledIconButton(
         onClick = onClick,
-        modifier = Modifier.size(32.dp),
+        modifier = Modifier.size(addRemoveBtnSize.dp),
         shape = CircleShape,
         colors = IconButtonDefaults.filledIconButtonColors(
             containerColor = MaterialTheme.colorScheme.primary
         )
     ) {
         Icon(
-            imageVector = Icons.Default.Add,
+            imageVector = Icons.Rounded.Add,
             contentDescription = "Добавить",
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(addRemoveIconSize.dp),
+            tint = Color.White
         )
     }
 }
@@ -122,44 +133,45 @@ fun QuantityCounter(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.Center
     ) {
         FilledIconButton(
             onClick = onDecrement,
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier.size(addRemoveBtnSize.dp),
             shape = CircleShape,
             colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                containerColor = MaterialTheme.colorScheme.secondary
             )
         ) {
             Icon(
-                imageVector = Icons.Default.Remove,
+                imageVector = Icons.Rounded.Remove,
                 contentDescription = "Убрать",
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(addRemoveIconSize.dp),
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
 
         Text(
             text = quantity.toString(),
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.widthIn(min = 16.dp),
+            modifier = Modifier.widthIn(min = 30.dp),
             textAlign = TextAlign.Center
         )
 
         FilledIconButton(
             onClick = onIncrement,
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier.size(addRemoveBtnSize.dp),
             shape = CircleShape,
             colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = MaterialTheme.colorScheme.primary
+                containerColor = MaterialTheme.colorScheme.secondary
             )
         ) {
             Icon(
-                imageVector = Icons.Default.Add,
+                imageVector = Icons.Rounded.Add,
                 contentDescription = "Добавить",
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(addRemoveIconSize.dp),
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
     }

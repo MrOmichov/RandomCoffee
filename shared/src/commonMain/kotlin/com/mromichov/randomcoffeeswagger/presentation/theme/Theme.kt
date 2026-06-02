@@ -10,6 +10,7 @@ private val LightColorScheme = lightColorScheme(
     surface = neutral1Light,
     secondary = neutral2Light,
     tertiary = neutral3Light,
+    onSurface = black
 )
 
 @Composable

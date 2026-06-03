@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,8 +27,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,60 +55,64 @@ fun CartBottomSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier
 ) {
-        ModalBottomSheet(
-            containerColor = MaterialTheme.colorScheme.surface,
-            sheetState = sheetState,
-            onDismissRequest = onDismissRequest
+
+    ModalBottomSheet(
+        containerColor = MaterialTheme.colorScheme.surface,
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest
+    ) {
+        Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.surface)
         ) {
-            Scaffold(
-                bottomBar = {
-                    Button(
-                        onClick = {},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .navigationBarsPadding()
-                            .padding(horizontal = 18.dp, vertical = 16.dp),
-                        shape = RoundedCornerShape(30.dp)
-                    ) {
-                        Text(
-                            text = "Оформить заказ",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    }
-                }
-            ) { padding ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(padding)
-                        .background(MaterialTheme.colorScheme.surface)
-                ) {
-                    Row(
-                        modifier = modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Ваш заказ", style = MaterialTheme.typography.titleLarge)
-                        IconButton(onClick = viewModel::clearCart) {
-                            Icon(
-                                imageVector = Icons.Outlined.Delete,
-                                contentDescription = "Очистить корзину",
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-
-                    HorizontalDivider(modifier = modifier)
-
-                    if (!uiState.isCartEmpty) {
-                        CartContent(
-                            cart = uiState.cart!!,
-                        )
-                    }
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Ваш заказ", style = MaterialTheme.typography.titleLarge)
+                IconButton(onClick = viewModel::clearCart) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Очистить корзину",
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
             }
 
+            HorizontalDivider(modifier = modifier)
+
+            if (!uiState.isCartEmpty) {
+                CartContent(
+                    cart = uiState.cart!!,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Button(
+                onClick = viewModel::createOrder,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 18.dp, vertical = 16.dp),
+                shape = RoundedCornerShape(30.dp)
+            ) {
+                if (uiState.isOrdering) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = "Оформить заказ",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+            }
         }
+    }
 
 }
 

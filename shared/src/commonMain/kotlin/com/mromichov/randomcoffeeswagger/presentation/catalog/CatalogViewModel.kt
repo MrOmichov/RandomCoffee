@@ -125,4 +125,36 @@ class CatalogViewModel(
                 .onSuccess { _uiState.update { it.copy(cart = null, isCartShown = false) } }
         }
     }
+
+
+
+    fun createOrder() {
+        if (_uiState.value.isCartEmpty) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isOrdering = true, orderError = false) }
+            createOrderUseCase()
+                .onSuccess {
+                    _uiState.update { it.copy(
+                        isOrdering = false,
+                        orderSuccess = true,
+                        cart = null,
+                        isCartShown = false
+                    )}
+                }
+                .onFailure { error ->
+                    _uiState.update { it.copy(
+                        isOrdering = false,
+                        orderError = true
+                    )}
+                }
+        }
+    }
+
+    fun consumeOrderSuccess() {
+        _uiState.update { it.copy(orderSuccess = false, isCartShown = false) }
+    }
+
+    fun consumeOrderError() {
+        _uiState.update { it.copy(orderError = false, isCartShown = false) }
+    }
 }

@@ -64,6 +64,10 @@ kotlin {
 
             // KotlinX
             implementation(libs.kotlinx.serialization)
+
+            // Multiplatform Settings
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.no.arg)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

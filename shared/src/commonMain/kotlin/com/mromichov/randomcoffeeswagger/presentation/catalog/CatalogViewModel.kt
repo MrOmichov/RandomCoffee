@@ -47,6 +47,7 @@ class CatalogViewModel(
                     isLoading = false,
                     categories = categoriesResult.getOrElse { emptyList() },
                     products = productsResult.getOrElse { emptyList() },
+                    cart = cartResult.getOrNull(),
                     error = if (productsResult.isFailure)
                         "Не удалось загрузить товары" else null
                 )
@@ -54,7 +55,74 @@ class CatalogViewModel(
         }
     }
 
+    fun loadCart() {
+        viewModelScope.launch {
+            getCartUseCase()
+                .onSuccess { cart -> _uiState.update { it.copy(cart = cart) } }
+        }
+    }
+
     fun selectCategory(categoryId: Int?) {
         _uiState.update { it.copy(selectedCategoryId = categoryId) }
+    }
+
+    fun changeCartVisibility(visible: Boolean) {
+        _uiState.update { it.copy(isCartShown = visible) }
+    }
+
+    fun addToCart(productId: Int) {
+        viewModelScope.launch {
+            addToCartUseCase(productId, 1)
+                .onSuccess { cart ->
+                    _uiState.update { it.copy(cart = cart) }
+                }
+        }
+    }
+
+    fun incrementItem(productId: Int) {
+        val current = _uiState.value.cart?.items
+            ?.find { it.product.id == productId }?.quantity ?: return
+
+        if (current >= 10) return
+
+        viewModelScope.launch {
+            updateCartItemUseCase(productId, current + 1)
+                .onSuccess { cart ->
+                    _uiState.update { it.copy(cart = cart) }
+                }
+                .onFailure { loadCart() }
+        }
+    }
+
+    fun decrementItem(productId: Int) {
+        val current = _uiState.value.cart?.items
+            ?.find { it.product.id == productId }?.quantity ?: return
+
+        viewModelScope.launch {
+            if (current <= 1) {
+                removeFromCartUseCase(productId)
+                    .onSuccess { cart -> _uiState.update { it.copy(cart = cart) } }
+                    .onFailure { loadCart() }
+            } else {
+                updateCartItemUseCase(productId, current - 1)
+                    .onSuccess { cart -> _uiState.update { it.copy(cart = cart) } }
+                    .onFailure { loadCart() }
+            }
+        }
+    }
+
+    fun removeItem(productId: Int) {
+        viewModelScope.launch {
+            removeFromCartUseCase(productId)
+                .onSuccess { cart -> _uiState.update { it.copy(cart = cart) } }
+                .onFailure { loadCart() }
+        }
+    }
+
+    fun clearCart() {
+        viewModelScope.launch {
+            clearCartUseCase()
+                .onSuccess { _uiState.update { it.copy(cart = null, isCartShown = false) } }
+        }
     }
 }

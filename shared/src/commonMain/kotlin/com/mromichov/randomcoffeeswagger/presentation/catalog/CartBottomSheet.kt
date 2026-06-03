@@ -70,7 +70,6 @@ private fun CartBottomSheet(
             }
         ) { padding ->
             Column(modifier = Modifier.padding(padding)) {
-                // Заголовок
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -91,9 +90,6 @@ private fun CartBottomSheet(
                 if (!uiState.isCartEmpty) {
                     CartContent(
                         cart = uiState.cart!!,
-                        onIncrement = {},
-                        onDecrement = {},
-                        onRemove = {}
                     )
                 }
             }
@@ -104,9 +100,6 @@ private fun CartBottomSheet(
 @Composable
 fun CartContent(
     cart: Cart,
-    onIncrement: (Int) -> Unit,
-    onDecrement: (Int) -> Unit,
-    onRemove: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -118,8 +111,6 @@ fun CartContent(
             items(items = cart.items, key = { it.product.id }) { item ->
                 CartItemRow(
                     item = item,
-                    onIncrement = { onIncrement(item.product.id) },
-                    onDecrement = { onDecrement(item.product.id) }
                 )
             }
         }
@@ -146,9 +137,7 @@ fun CartContent(
 
 @Composable
 private fun CartItemRow(
-    item: CartItem,
-    onIncrement: () -> Unit,
-    onDecrement: () -> Unit
+    item: CartItem
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),

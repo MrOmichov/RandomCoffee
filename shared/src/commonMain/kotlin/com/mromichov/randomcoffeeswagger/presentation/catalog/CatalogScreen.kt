@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,11 +19,15 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableChipElevation
@@ -38,10 +43,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mromichov.randomcoffeeswagger.domain.model.Category
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -55,7 +62,31 @@ fun CatalogScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        floatingActionButton = {
+            if (!uiState.isCartEmpty)
+                FloatingActionButton(
+                    onClick = { viewModel.changeCartVisibility(true) },
+                    shape = RoundedCornerShape(10.dp),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White,
+                ) {
+                    Row(
+                        modifier = Modifier.padding(20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Cart"
+                        )
+                        Text(
+                            text = "${uiState.cartTotal} ₽",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
+        },
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,6 +112,9 @@ fun CatalogScreen(
                         uiState = uiState,
                         onProductCardClick = onProductCardClick,
                         onCategorySelect = { id -> viewModel.selectCategory(id) },
+                        onAddClick = viewModel::addToCart,
+                        onIncrement = viewModel::incrementItem,
+                        onDecrement = viewModel::decrementItem,
                     )
                 }
             }
@@ -94,6 +128,9 @@ fun CatalogContent(
     uiState: CatalogUiState,
     onProductCardClick: (Int) -> Unit,
     onCategorySelect: (Int?) -> Unit,
+    onAddClick: (Int) -> Unit,
+    onIncrement: (Int) -> Unit,
+    onDecrement: (Int) -> Unit,
 ) {
     val gridState = rememberLazyGridState()
     val rowState = rememberLazyListState()
@@ -179,10 +216,10 @@ fun CatalogContent(
                         ProductCard(
                             product = item.product,
                             onCardClick = { onProductCardClick(item.product.id) },
-                            onAddClick = {},
-                            onIncrement = {},
-                            onDecrement = {},
-                            quantityInCart = 0,
+                            onAddClick = { onAddClick(item.product.id) },
+                            onIncrement = { onIncrement(item.product.id) },
+                            onDecrement = { onDecrement(item.product.id) },
+                            quantityInCart = uiState.quantityInCart(item.product.id),
                             modifier = Modifier,
                         )
                     }

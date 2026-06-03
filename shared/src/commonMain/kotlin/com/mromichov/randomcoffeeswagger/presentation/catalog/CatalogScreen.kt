@@ -52,31 +52,7 @@ fun CatalogScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold(
-//        floatingActionButton = {
-//            if (!uiState.isCartEmpty)
-//                FloatingActionButton(
-//                    onClick = { viewModel.changeCartVisibility(true) },
-//                    shape = RoundedCornerShape(10.dp),
-//                    containerColor = MaterialTheme.colorScheme.primary,
-//                    contentColor = Color.White,
-//                ) {
-//                    Row(
-//                        modifier = Modifier.padding(20.dp),
-//                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.ShoppingCart,
-//                            contentDescription = "Cart"
-//                        )
-//                        Text(
-//                            text = "Summa",
-//                            style = MaterialTheme.typography.bodyMedium,
-//                        )
-//                    }
-//                }
-//        },
-    ) { paddingValues ->
+    Scaffold { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()

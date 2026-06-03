@@ -25,6 +25,7 @@ import com.mromichov.randomcoffeeswagger.Greeting
 import com.mromichov.randomcoffeeswagger.domain.model.Product
 import com.mromichov.randomcoffeeswagger.presentation.catalog.CatalogScreen
 import com.mromichov.randomcoffeeswagger.presentation.catalog.ProductCard
+import com.mromichov.randomcoffeeswagger.presentation.product.ProductScreen
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
 import randomcoffeeswagger.shared.generated.resources.Res
@@ -32,6 +33,9 @@ import randomcoffeeswagger.shared.generated.resources.compose_multiplatform
 
 @Serializable
 object CatalogRoute
+
+@Serializable
+data class ProductRoute(val productId: Int)
 
 @Composable
 fun AppNavigation() {
@@ -43,7 +47,15 @@ fun AppNavigation() {
     ) {
         composable<CatalogRoute> {
             CatalogScreen(
-                onProductCardClick = {} // TODO переход на экран описания товара
+                onProductCardClick = { productid -> navController.navigate(ProductRoute(productid)) }
+            )
+        }
+
+        composable<ProductRoute> { backStackEntry ->
+            val route: ProductRoute = backStackEntry.toRoute()
+            ProductScreen(
+                productId = route.productId,
+                onBack = { navController.popBackStack() }
             )
         }
     }

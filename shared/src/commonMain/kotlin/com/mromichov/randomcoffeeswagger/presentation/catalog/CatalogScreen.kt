@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -20,11 +22,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -94,28 +100,46 @@ fun CatalogScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            if (!uiState.isCartEmpty)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                ,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 FloatingActionButton(
-                    onClick = { viewModel.changeCartVisibility(true) },
+                    onClick = {},
                     shape = RoundedCornerShape(10.dp),
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White,
                 ) {
-                    Row(
-                        modifier = Modifier.padding(20.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Cart"
-                        )
-                        Text(
-                            text = "${uiState.cartTotal} ₽",
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
+                    Icon(Icons.Outlined.LightMode, contentDescription = "Переключение цветовой темы")
                 }
+
+                if (!uiState.isCartEmpty)
+                    FloatingActionButton(
+                        onClick = { viewModel.changeCartVisibility(true) },
+                        shape = RoundedCornerShape(10.dp),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White,
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = "Cart"
+                            )
+                            Text(
+                                text = "${uiState.cartTotal} ₽",
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                    }
+            }
         },
+        floatingActionButtonPosition = FabPosition.Center
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -310,14 +334,14 @@ fun CategoryChip(
         label = {
             Text(
                 text = category.name,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
         },
         shape = RoundedCornerShape(50.dp),
         border = null,
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = MaterialTheme.colorScheme.primary,
-            selectedLabelColor = MaterialTheme.colorScheme.surface,
+            selectedLabelColor = Color.White,
             disabledContainerColor = MaterialTheme.colorScheme.surface,
             disabledLabelColor = MaterialTheme.colorScheme.onSurface,
         )

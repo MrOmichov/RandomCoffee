@@ -38,7 +38,7 @@ object CatalogRoute
 data class ProductRoute(val productId: Int)
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(onToggleTheme: () -> Unit) {
     val navController = rememberNavController()
 
     NavHost(
@@ -47,6 +47,7 @@ fun AppNavigation() {
     ) {
         composable<CatalogRoute> {
             CatalogScreen(
+                onToggleTheme = onToggleTheme,
                 onProductCardClick = { productid -> navController.navigate(ProductRoute(productid)) }
             )
         }
@@ -55,7 +56,8 @@ fun AppNavigation() {
             val route: ProductRoute = backStackEntry.toRoute()
             ProductScreen(
                 productId = route.productId,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onToggleTheme = onToggleTheme,
             )
         }
     }

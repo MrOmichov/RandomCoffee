@@ -46,6 +46,7 @@ import randomcoffeeswagger.shared.generated.resources.no_image
 
 @Composable
 fun ProductScreen(
+    onToggleTheme: () -> Unit,
     productId: Int,
     onBack: () -> Unit,
     viewModel: ProductViewModel = koinViewModel { parametersOf(productId) }
@@ -65,7 +66,7 @@ fun ProductScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick = onToggleTheme,
                 shape = RoundedCornerShape(10.dp),
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White,

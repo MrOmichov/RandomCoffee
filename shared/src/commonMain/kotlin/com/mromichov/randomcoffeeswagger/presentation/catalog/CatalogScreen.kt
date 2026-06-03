@@ -60,6 +60,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(
+    onToggleTheme: () -> Unit,
     onProductCardClick: (Int) -> Unit,
     viewModel: CatalogViewModel = koinViewModel(),
 ) {
@@ -99,7 +100,7 @@ fun CatalogScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 FloatingActionButton(
-                    onClick = {},
+                    onClick = onToggleTheme,
                     shape = RoundedCornerShape(10.dp),
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White,

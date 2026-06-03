@@ -18,6 +18,7 @@ import com.mromichov.randomcoffeeswagger.domain.usecase.RemoveFromCartUseCase
 import com.mromichov.randomcoffeeswagger.domain.usecase.UpdateCartItemUseCase
 import com.mromichov.randomcoffeeswagger.presentation.catalog.CatalogViewModel
 import com.mromichov.randomcoffeeswagger.presentation.product.ProductViewModel
+import com.mromichov.randomcoffeeswagger.presentation.theme.ThemeViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -54,4 +55,5 @@ val appModule = module {
             get()
         )
     }
+    viewModel { ThemeViewModel() }
 }

@@ -20,13 +20,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.mromichov.randomcoffeeswagger.domain.model.Product
@@ -52,6 +55,7 @@ fun ProductScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         }
     ) { paddingValues ->
@@ -87,8 +91,9 @@ fun ProductScreen(
 fun ProductContent(product: Product) {
     Column(
         modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         AsyncImage(
             model = product.imageUrl,
@@ -100,7 +105,16 @@ fun ProductContent(product: Product) {
             error = painterResource(Res.drawable.no_image),
         )
 
-        Text("fasdfsdf")
+        Text(
+            text = product.name,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+        )
+
+        Text(
+            text = product.description,
+            style = MaterialTheme.typography.bodyLarge,
+        )
     }
 }
 

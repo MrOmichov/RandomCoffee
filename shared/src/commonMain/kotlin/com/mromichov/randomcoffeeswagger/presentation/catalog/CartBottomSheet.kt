@@ -1,5 +1,6 @@
 package com.mromichov.randomcoffeeswagger.presentation.catalog
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -48,7 +49,6 @@ fun CartBottomSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier
 ) {
-
         ModalBottomSheet(
             containerColor = MaterialTheme.colorScheme.surface,
             sheetState = sheetState,
@@ -61,11 +61,12 @@ fun CartBottomSheet(
                         modifier = Modifier
                             .fillMaxWidth()
                             .navigationBarsPadding()
-                            .padding(horizontal = 18.dp, vertical = 12.dp),
-                        shape = RoundedCornerShape(12.dp)
+                            .padding(horizontal = 18.dp, vertical = 16.dp),
+                        shape = RoundedCornerShape(30.dp)
                     ) {
                         Text(
-                            text = "Оформить заказ"
+                            text = "Оформить заказ",
+                            style = MaterialTheme.typography.titleLarge
                         )
                     }
                 }
@@ -74,6 +75,7 @@ fun CartBottomSheet(
                     modifier = Modifier
                         .fillMaxHeight()
                         .padding(padding)
+                        .background(MaterialTheme.colorScheme.surface)
                 ) {
                     Row(
                         modifier = modifier.fillMaxWidth(),
@@ -81,7 +83,7 @@ fun CartBottomSheet(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Ваш заказ", style = MaterialTheme.typography.titleLarge)
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = viewModel::clearCart) {
                             Icon(
                                 imageVector = Icons.Outlined.Delete,
                                 contentDescription = "Очистить корзину",

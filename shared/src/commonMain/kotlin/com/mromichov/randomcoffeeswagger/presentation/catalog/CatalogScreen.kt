@@ -71,20 +71,23 @@ fun CatalogScreen(
 
     LaunchedEffect(uiState.orderSuccess) {
         if (uiState.orderSuccess) {
-            snackbarHostState.showSnackbar(
-                message = "Заказ создан",
-            )
             viewModel.consumeOrderSuccess()
         }
     }
 
     LaunchedEffect(uiState.orderError) {
         if (uiState.orderError) {
-            snackbarHostState.showSnackbar(
-                message = "Произошла ошибка",
-                duration = SnackbarDuration.Short
-            )
             viewModel.consumeOrderError()
+        }
+    }
+
+    LaunchedEffect(uiState.snackbarMsg) {
+        uiState.snackbarMsg?.let {
+            snackbarHostState.showSnackbar(
+                message = it,
+                duration = SnackbarDuration.Short,
+            )
+            viewModel.endSnackbar()
         }
     }
 

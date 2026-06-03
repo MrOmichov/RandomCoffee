@@ -151,10 +151,26 @@ class CatalogViewModel(
     }
 
     fun consumeOrderSuccess() {
-        _uiState.update { it.copy(orderSuccess = false, isCartShown = false) }
+        _uiState.update {
+            it.copy(
+                orderSuccess = false,
+                isCartShown = false,
+                snackbarMsg = "Заказ создан"
+            )
+        }
     }
 
     fun consumeOrderError() {
-        _uiState.update { it.copy(orderError = false, isCartShown = false) }
+        _uiState.update {
+            it.copy(
+                orderError = false,
+                isCartShown = false,
+                snackbarMsg = "Произошла ошибка"
+            )
+        }
+    }
+
+    fun endSnackbar() {
+        _uiState.update { it.copy(snackbarMsg = null) }
     }
 }

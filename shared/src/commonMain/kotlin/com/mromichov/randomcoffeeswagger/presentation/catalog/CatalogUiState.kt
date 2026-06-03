@@ -15,7 +15,8 @@ data class CatalogUiState(
     val isCartShown: Boolean = false,
     val isOrdering: Boolean = false,
     val orderSuccess: Boolean = false,
-    val orderError: Boolean = false
+    val orderError: Boolean = false,
+    val snackbarMsg: String? = null
 ) {
     sealed interface GridItem {
         data class Header(val categoryName: String, val categoryId: Int?) : GridItem

@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -33,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableChipElevation
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -55,6 +57,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(
     onProductCardClick: (Int) -> Unit,
@@ -116,6 +119,19 @@ fun CatalogScreen(
                         onIncrement = viewModel::incrementItem,
                         onDecrement = viewModel::decrementItem,
                     )
+
+                    val sheetState = rememberModalBottomSheetState(
+                        skipPartiallyExpanded = false
+                    )
+                    if (uiState.isCartShown)
+                        CartBottomSheet(
+                            viewModel = viewModel,
+                            uiState = uiState,
+                            sheetState = sheetState,
+                            onDismissRequest = { viewModel.changeCartVisibility(false) },
+                            modifier = Modifier
+                                .padding(horizontal = 18.dp, vertical = 9.dp),
+                        )
                 }
             }
 

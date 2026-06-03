@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -30,6 +32,7 @@ import coil3.compose.AsyncImage
 import com.mromichov.randomcoffeeswagger.domain.model.Product
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import randomcoffeeswagger.shared.generated.resources.Res
 import randomcoffeeswagger.shared.generated.resources.no_image
 
@@ -37,13 +40,13 @@ import randomcoffeeswagger.shared.generated.resources.no_image
 fun ProductScreen(
     productId: Int,
     onBack: () -> Unit,
-    viewModel: ProductViewModel = koinViewModel()
+    viewModel: ProductViewModel = koinViewModel { parametersOf(productId) }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(uiState.product?.name ?: "") },
+                title = {  },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
@@ -84,19 +87,20 @@ fun ProductScreen(
 fun ProductContent(product: Product) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AsyncImage(
             model = product.imageUrl,
             contentDescription = product.name,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(100.dp)
-                .fillMaxWidth(),
+                .widthIn(),
             placeholder = painterResource(Res.drawable.no_image),
             error = painterResource(Res.drawable.no_image),
         )
 
+        Text("fasdfsdf")
     }
 }
 

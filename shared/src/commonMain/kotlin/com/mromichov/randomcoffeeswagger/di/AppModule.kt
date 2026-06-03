@@ -1,5 +1,6 @@
 package com.mromichov.randomcoffeeswagger.di
 
+import com.mromichov.randomcoffeeswagger.data.dto.ProductDto
 import com.mromichov.randomcoffeeswagger.data.repository.CartRepositoryImpl
 import com.mromichov.randomcoffeeswagger.data.repository.OrderRepositoryImpl
 import com.mromichov.randomcoffeeswagger.data.repository.ProductRepositoryImpl
@@ -16,6 +17,7 @@ import com.mromichov.randomcoffeeswagger.domain.usecase.GetProductsUseCase
 import com.mromichov.randomcoffeeswagger.domain.usecase.RemoveFromCartUseCase
 import com.mromichov.randomcoffeeswagger.domain.usecase.UpdateCartItemUseCase
 import com.mromichov.randomcoffeeswagger.presentation.catalog.CatalogViewModel
+import com.mromichov.randomcoffeeswagger.presentation.product.ProductViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -38,6 +40,12 @@ val appModule = module {
         CatalogViewModel(
             get(),
             get(),
+        )
+    }
+    viewModel { (productId: Int) ->
+        ProductViewModel(
+            productId = productId,
+            get()
         )
     }
 }

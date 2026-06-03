@@ -12,46 +12,38 @@ data class CatalogUiState(
 
 
 ) {
-    val groupedProducts: Map<String, List<Product>>
-        get() = products.groupBy { it.categoryName }
+    sealed interface GridItem {
+        data class Header(val categoryName: String, val categoryId: Int?) : GridItem
+        data class ProductItem(val product: Product, val categoryId: Int?) : GridItem
+    }
 
-    val gridIndexToCategoryIdMap: Map<Int, Int>
+    val flatGridItems: List<GridItem>
         get() {
-            val mapping = mutableMapOf<Int, Int>()
-            var globalIndex = 0
+            val list = mutableListOf<GridItem>()
+            val grouped = products.groupBy { it.categoryName }
 
-            groupedProducts.forEach { (categoryName, products) ->
+            grouped.forEach { (categoryName, productsList) ->
                 val categoryId = categories.find { it.name == categoryName }?.id
-                if (categoryId != null) {
-                    mapping[globalIndex] = categoryId
-                    globalIndex += 1
-
-                    val uniqueProductsCount = products.distinctBy { it.id }.size
-                    for (i in 0 until uniqueProductsCount) {
-                        mapping[globalIndex] = categoryId
-                        globalIndex += 1
-                    }
+                list.add(GridItem.Header(categoryName, categoryId))
+                productsList.distinctBy { it.id }.forEach { product ->
+                    list.add(GridItem.ProductItem(product, categoryId))
                 }
             }
-            return mapping
+            return list
         }
 
-    val categoryToGridIndexMap: Map<Int, Int>
-        get() {
-            val mapping = mutableMapOf<Int, Int>()
-            var globalIndex = 0
-
-            groupedProducts.forEach { (categoryName, products) ->
-                val categoryId = categories.find { it.name == categoryName }?.id
-                if (categoryId != null) {
-                    mapping[categoryId] = globalIndex
-                }
-
-                globalIndex += 1
-
-                val uniqueProductsCount = products.distinctBy { it.id }.size
-                globalIndex += uniqueProductsCount
-            }
-            return mapping
+    fun getGridIndexByCategoryId(categoryId: Int): Int {
+        val index = flatGridItems.indexOfFirst { item ->
+            item is GridItem.Header && item.categoryId == categoryId
         }
+        return if (index != -1) index else 0
+    }
+
+    fun getCategoryIdByGridIndex(index: Int): Int? {
+        if (index !in flatGridItems.indices) return null
+        return when (val item = flatGridItems[index]) {
+            is GridItem.Header -> item.categoryId
+            is GridItem.ProductItem -> item.categoryId
+        }
+    }
 }

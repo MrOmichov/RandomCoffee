@@ -40,6 +40,12 @@ val appModule = module {
         CatalogViewModel(
             get(),
             get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
         )
     }
     viewModel { (productId: Int) ->

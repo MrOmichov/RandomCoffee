@@ -20,6 +20,12 @@ import kotlinx.coroutines.launch
 class CatalogViewModel(
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getProductsUseCase: GetProductsUseCase,
+    private val getCartUseCase: GetCartUseCase,
+    private val addToCartUseCase: AddToCartUseCase,
+    private val updateCartItemUseCase: UpdateCartItemUseCase,
+    private val removeFromCartUseCase: RemoveFromCartUseCase,
+    private val clearCartUseCase: ClearCartUseCase,
+    private val createOrderUseCase: CreateOrderUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CatalogUiState())
     val uiState: StateFlow<CatalogUiState> = _uiState.asStateFlow()
@@ -34,6 +40,7 @@ class CatalogViewModel(
 
             val categoriesResult = getCategoriesUseCase()
             val productsResult = getProductsUseCase()
+            val cartResult = getCartUseCase()
 
             _uiState.update { state ->
                 state.copy(

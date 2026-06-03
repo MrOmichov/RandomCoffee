@@ -1,5 +1,6 @@
 package com.mromichov.randomcoffeeswagger.presentation.catalog
 
+import com.mromichov.randomcoffeeswagger.domain.model.Cart
 import com.mromichov.randomcoffeeswagger.domain.model.Category
 import com.mromichov.randomcoffeeswagger.domain.model.Product
 
@@ -10,7 +11,11 @@ data class CatalogUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
 
-
+    val cart: Cart? = null,
+    val isCartShown: Boolean = false,
+    val isOrdering: Boolean = false,
+    val orderSuccess: Boolean = false,
+    val orderError: String? = null
 ) {
     sealed interface GridItem {
         data class Header(val categoryName: String, val categoryId: Int?) : GridItem
@@ -46,4 +51,16 @@ data class CatalogUiState(
             is GridItem.ProductItem -> item.categoryId
         }
     }
+
+    val isCartEmpty: Boolean
+        get() = cart?.items.isNullOrEmpty()
+
+    val cartTotal: Double
+        get() = cart?.totalPrice ?: 0.0
+
+    val cartItemCount: Int
+        get() = cart?.items?.size ?: 0
+
+    fun quantityInCart(productId: Int): Int =
+        cart?.items?.find { it.product.id == productId }?.quantity ?: 0
 }

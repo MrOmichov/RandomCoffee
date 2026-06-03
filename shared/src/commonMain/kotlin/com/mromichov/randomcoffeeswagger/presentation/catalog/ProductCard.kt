@@ -63,6 +63,7 @@ fun ProductCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp),
+                placeholder = painterResource(Res.drawable.no_image),
                 error = painterResource(Res.drawable.no_image),
             )
 

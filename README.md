@@ -1,20 +1,109 @@
-This is a Kotlin Multiplatform project targeting Android.
+# RandomCoffee Swagger
 
-* [/shared](./shared/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./shared/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./shared/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./shared/src/jvmMain/kotlin)
-    folder is the appropriate location.
+Прототип приложения для заказа кофе из кофейни RandomCoffee.  
+Тестовое задание для Студенческой лаборатории.
 
-### Running the apps
 
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
 
-- Android app: `./gradlew :androidApp:assembleDebug`
+## Скриншоты
+![Экран каталога](screenshots/Screenshot_2026-06-04-05-15-19-844_com.mromichov.randomcoffeeswagger.jpg)  
+![](screenshots/Screenshot_2026-06-04-05-15-26-641_com.mromichov.randomcoffeeswagger.jpg)  
+
+![Экран продукта](screenshots/Screenshot_2026-06-04-05-15-37-869_com.mromichov.randomcoffeeswagger.jpg)  
+![](screenshots/Screenshot_2026-06-04-05-15-34-511_com.mromichov.randomcoffeeswagger.jpg)  
+
+![С корзиной](screenshots/Screenshot_2026-06-04-05-15-47-223_com.mromichov.randomcoffeeswagger.jpg)
+![BottomSheet корзины](screenshots/Screenshot_2026-06-04-05-15-53-019_com.mromichov.randomcoffeeswagger.jpg)
+
+## Видео
+![Видео](Screenrecorder-2026-06-04-05-01-30-771.mp4)
+
+## Стек технологий
+
+| Что                          | Технология  |
+|------------------------------|-------------|
+| **Язык**                     | Kotlin Multiplatform |
+| **UI**                       | Compose Multiplatform |
+| **Архитектура**              | Clean Architecture (domain / data / presentation) |
+| **DI**                       | Koin        |
+| **Сеть**                     | Ktor        |
+| **Навигация**                | Navigation Compose |
+| **State**                    | ViewModel + StateFlow |
+| **Изображения (AsyncImage)** | Coil        |
+
+
+## Архитектура проекта
+
+Проект построен по принципам Clean Architecture с разделением на части:
+
+```
+presentation/     — Compose экраны, ViewModels, UiState
+domain/           — Use Cases, интерфейсы репозиториев, доменные модели  
+data/             — Ktor API, DTO, реализации репозиториев
+di/               — Koin модули
+```
+
+
+## Реализованный функционал
+
+### Основное задание
+- Загрузка товаров из сети с retry логикой
+- Корректная обработка сетевых ошибок с возможностью повтора
+- Отображение товаров сгруппированных по категориям 2 колонки
+- Добавление товара в корзину, изменение количества
+- Горизонтальная прокрутка категорий, всегда видимая поверх списка
+- Переход на экран товара с описанием и ценой, возврат назад
+- BottomSheet корзины — заказ, очистка корзины
+- Ограничение на не более чем 10 штук товара
+- Сохранение состояния корзины — корзина хранится на сервере, восстанавливается через `GET /cart` при каждом запуске
+
+### Дополнительные задачи
+- Автоскролл категорий — при скролле списка товаров активная категория автоматически появляется первой слева
+- Две темы оформления — светлая и тёмная, с ручным переключением, выбор сохраняется после перезапуска
+
+
+## API
+Приложение использует API Swagger от Студенческой лаборатории: `https://coffee-backend.caravanlabs.ru`
+
+
+## Структура проекта
+
+```
+commonMain/
+├── data/
+│   ├── api/              — Ktor клиент и API запросы
+│   ├── dto/              — Data Transfer Objects + маппинги
+│   └── repository/       — Реализации репозиториев
+├── domain/
+│   ├── model/            — Чистые доменные модели
+│   ├── repository/       — Интерфейсы репозиториев
+│   └── usecase/          — Use Cases (один класс — одно действие)
+├── presentation/
+│   ├── catalog/          — Экран каталога и BottomSheet корзины + ViewModel
+│   ├── product/          — Экран товара + ViewModel
+│   ├── theme/            — Цвета, темы
+│   └── Navigation.kt     — Навигация приложения
+└── di/                   — Koin модули
+```
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## Про Git
+
+Старался следовать GitFlow, Conventional Commits:
+
+```
+master - финальная версия
+develop - основная ветка разработки
+feature/... - отдельная ветка на каждую фичу
+```
+
+Коммиты делал в таком стиле по **Conventional Commits**:
+```
+[feat]:     новая функциональность
+[style]:    стили
+[fix]:      исправление бага  
+[refactor]: рефакторинг
+[chore]:    зависимости, конфигурация
+[docs]:     документация
+```

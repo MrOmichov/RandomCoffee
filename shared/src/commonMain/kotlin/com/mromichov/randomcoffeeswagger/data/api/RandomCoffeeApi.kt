@@ -36,7 +36,6 @@ class RandomCoffeeApi(
         client.get("products/$id").body()
 
 
-
     suspend fun getCart(): CartDto =
         client.get("cart").body()
 

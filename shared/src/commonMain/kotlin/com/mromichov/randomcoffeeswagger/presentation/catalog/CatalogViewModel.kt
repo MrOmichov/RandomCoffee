@@ -32,21 +32,22 @@ class CatalogViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            val categoriesDeferred = async { getCategoriesUseCase() }
-            val productsDeferred = async { getProductsUseCase() }
-
-            val categoriesResult = categoriesDeferred.await()
-            val productsResult = productsDeferred.await()
+            val categoriesResult = getCategoriesUseCase()
+            val productsResult = getProductsUseCase()
 
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
                     categories = categoriesResult.getOrElse { emptyList() },
                     products = productsResult.getOrElse { emptyList() },
-                    error = if (productsDeferred.await().isFailure)
+                    error = if (productsResult.isFailure)
                         "Не удалось загрузить товары" else null
                 )
             }
         }
+    }
+
+    fun selectCategory(categoryId: Int?) {
+        _uiState.update { it.copy(selectedCategoryId = categoryId) }
     }
 }

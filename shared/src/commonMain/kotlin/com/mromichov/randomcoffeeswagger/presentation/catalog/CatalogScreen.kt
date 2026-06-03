@@ -7,28 +7,42 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableChipElevation
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mromichov.randomcoffeeswagger.domain.model.Category
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -87,7 +101,7 @@ fun CatalogScreen(
                     CatalogContent(
                         uiState = uiState,
                         onProductCardClick = onProductCardClick,
-                        onCategorySelect = {},
+                        onCategorySelect = { id -> viewModel.selectCategory(id) },
                     )
                 }
             }
@@ -102,37 +116,90 @@ fun CatalogContent(
     onProductCardClick: (Int) -> Unit,
     onCategorySelect: (Int?) -> Unit,
 ) {
+    val gridState = rememberLazyGridState()
+    val rowState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val currentVisibleCategoryId by remember {
+        derivedStateOf {
+            val firstVisibleIndex = gridState.firstVisibleItemIndex
+            uiState.gridIndexToCategoryIdMap[firstVisibleIndex]
+        }
+    }
+
+    LaunchedEffect(currentVisibleCategoryId) {
+        val newId = currentVisibleCategoryId
+        if (newId != null && newId != uiState.selectedCategoryId) {
+            onCategorySelect(newId)
+        }
+    }
+
+    LaunchedEffect(uiState.selectedCategoryId) {
+        val targetId = uiState.selectedCategoryId
+        if (targetId != null) {
+            val categoryIndex = uiState.categories.indexOfFirst { it.id == targetId }
+            if (categoryIndex != -1) {
+                rowState.animateScrollToItem(categoryIndex)
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         CategoryRow(
+            state = rowState,
+                selectedCategoryId = uiState.selectedCategoryId,
             categories = uiState.categories,
-            selectedCategoryId = uiState.selectedCategoryId,
-            onCategorySelect = onCategorySelect
+            onCategorySelect = { categoryId ->
+                coroutineScope.launch {
+                    onCategorySelect(categoryId)
+
+                    val targetGridIndex = uiState.categoryToGridIndexMap[categoryId]
+                    if (targetGridIndex != null) {
+                        gridState.animateScrollToItem(targetGridIndex)
+                    }
+                }
+            }
         )
 
         LazyVerticalGrid(
+            state = gridState,
             columns = GridCells.Fixed(2),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
             horizontalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            val uniqueProducts = uiState.products.distinctBy { it.id }
-            items(
-                items = uniqueProducts,
-                key = { it.id }
-            ) { product ->
-                Text(text = "Заголовок типа")
-                ProductCard(
-                    product = product,
-                    onCardClick = { onProductCardClick(product.id) },
-                    onAddClick = {},
-                    onIncrement = {},
-                    onDecrement = {},
-                    quantityInCart = 0,
-                    modifier = Modifier,
-                )
+            uiState.groupedProducts.forEach { (categoryName, products) ->
+                val uniqueProducts = products.distinctBy { it.id }
+                item(key = "header_$categoryName", span = { GridItemSpan(maxLineSpan) }) {
+                    Text(
+                        text = categoryName,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(
+                            horizontal = 16.dp,
+                            vertical = 8.dp
+                        )
+                    )
+                }
+
+                items(
+                    items = uniqueProducts,
+                    key = { it.id }
+                ) { product ->
+                    Text(text = "Заголовок типа")
+                    ProductCard(
+                        product = product,
+                        onCardClick = { onProductCardClick(product.id) },
+                        onAddClick = {},
+                        onIncrement = {},
+                        onDecrement = {},
+                        quantityInCart = 0,
+                        modifier = Modifier,
+                    )
+                }
             }
         }
     }
@@ -140,12 +207,16 @@ fun CatalogContent(
 
 @Composable
 fun CategoryRow(
+    state: LazyListState,
     categories: List<Category>,
     selectedCategoryId: Int?,
     onCategorySelect: (Int) -> Unit
 ) {
-    Surface {
+    Surface(
+        color = MaterialTheme.colorScheme.background
+    ) {
         LazyRow(
+            state = state,
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
@@ -175,7 +246,14 @@ fun CategoryChip(
                 style = MaterialTheme.typography.labelLarge
             )
         },
-        shape = RoundedCornerShape(50.dp)
+        shape = RoundedCornerShape(50.dp),
+        border = null,
+        colors = FilterChipDefaults.filterChipColors(
+            selectedContainerColor = MaterialTheme.colorScheme.primary,
+            selectedLabelColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+            disabledLabelColor = MaterialTheme.colorScheme.onSurface,
+        )
     )
 }
 

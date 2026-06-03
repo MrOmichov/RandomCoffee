@@ -69,6 +69,7 @@ fun ProductCard(
             Text(
                 text = product.name,
                 style = MaterialTheme.typography.bodyLarge,
+                minLines = 2,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )

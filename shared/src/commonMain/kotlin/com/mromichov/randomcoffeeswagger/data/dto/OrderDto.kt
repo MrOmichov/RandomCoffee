@@ -5,9 +5,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OrderResponseDto(
-    @SerialName("id") val id: Int,
-    @SerialName("status") val status: String,
-    @SerialName("total_price") val totalPrice: Double? = null,
-    @SerialName("items") val items: List<CartItemResponseDto>? = null,
-    @SerialName("created_at") val createdAt: String? = null
+    @SerialName("success") val success: Boolean,
+    @SerialName("order") val order: OrderDto
 )
+
+@Serializable
+data class OrderDto(
+    @SerialName("id") val id: Int,
+    @SerialName("items") val items: List<CartItemResponseDto>,
+    @SerialName("status") val status: String,
+    @SerialName("total") val totalPrice: Double,
+    )
